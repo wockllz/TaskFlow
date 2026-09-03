@@ -134,3 +134,7 @@ The SQLite database uses 5 interconnected tables with foreign key cascades:
 
 Built as part of the **CodeAlpha Full Stack Development Internship** - Task 3.
 License: MIT.
+
+## Author
+
+**Ntshuxeko Sambo** — CodeAlpha Full Stack Development Intern (Student ID: CA/DF1/260876)
