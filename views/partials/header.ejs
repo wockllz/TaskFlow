@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeAlpha TaskFlow - Project Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/dashboard" class="nav-brand">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-text">TaskFlow</span>
+        <span class="brand-tag">CodeAlpha</span>
+      </a>
+
+      <% if (currentUser) { %>
+        <div class="nav-actions">
+          <a href="/dashboard" class="nav-link <%= path === '/dashboard' ? 'active' : '' %>">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Dashboard
+          </a>
+          <button class="btn btn-primary btn-sm" onclick="openModal('newProjectModal')">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Project
+          </button>
+
+          <div class="user-profile-menu">
+            <div class="user-avatar" style="background-color: <%= currentUser.avatar_color || '#4f46e5' %>">
+              <%= currentUser.username.charAt(0).toUpperCase() %>
+            </div>
+            <span class="username-display">@<%= currentUser.username %></span>
+            <a href="/logout" class="btn btn-outline btn-xs" title="Log Out">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              Logout
+            </a>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="nav-auth-links">
+          <a href="/login" class="btn btn-ghost">Log In</a>
+          <a href="/register" class="btn btn-primary">Sign Up</a>
+        </div>
+      <% } %>
+    </div>
+  </nav>
+
+  <main class="main-wrapper">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span><%= error %></span>
+        <button onclick="this.parentElement.remove()" class="alert-close">&times;</button>
+      </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span><%= success %></span>
+        <button onclick="this.parentElement.remove()" class="alert-close">&times;</button>
+      </div>
+    <% } %>

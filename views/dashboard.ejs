@@ -1,0 +1,141 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-page">
+  <div class="dashboard-header">
+    <div>
+      <h1 class="page-title">Welcome back, <%= currentUser.username %> 👋</h1>
+      <p class="page-subtitle">Here is an overview of your projects and assigned tasks.</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('newProjectModal')">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Create Project
+    </button>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon bg-blue-soft">📁</div>
+      <div class="stat-content">
+        <span class="stat-value"><%= stats.totalProjects %></span>
+        <span class="stat-label">Active Projects</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon bg-yellow-soft">📌</div>
+      <div class="stat-content">
+        <span class="stat-value"><%= stats.totalAssigned %></span>
+        <span class="stat-label">Tasks Assigned to You</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon bg-purple-soft">⏳</div>
+      <div class="stat-content">
+        <span class="stat-value"><%= stats.totalInProgress %></span>
+        <span class="stat-label">Tasks In Progress</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon bg-green-soft">✅</div>
+      <div class="stat-content">
+        <span class="stat-value"><%= stats.totalDone %></span>
+        <span class="stat-label">Completed Tasks</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects Section -->
+  <div class="section-container">
+    <div class="section-header">
+      <h2>Your Projects</h2>
+      <span class="badge"><%= projects.length %> total</span>
+    </div>
+
+    <% if (projects.length === 0) { %>
+      <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <h3>No projects yet</h3>
+        <p>Get started by creating your first group project to manage tasks and collaborate.</p>
+        <button class="btn btn-primary mt-3" onclick="openModal('newProjectModal')">Create Your First Project</button>
+      </div>
+    <% } else { %>
+      <div class="projects-grid">
+        <% projects.forEach(project => { %>
+          <% const percent = project.totalTasks > 0 ? Math.round((project.completedTasks / project.totalTasks) * 100) : 0; %>
+          <div class="project-card">
+            <div class="project-card-header">
+              <h3 class="project-title">
+                <a href="/projects/<%= project.id %>"><%= project.name %></a>
+              </h3>
+              <% if (project.owner_id === currentUser.id) { %>
+                <span class="role-badge owner">Owner</span>
+              <% } else { %>
+                <span class="role-badge member">Member</span>
+              <% } %>
+            </div>
+
+            <p class="project-description"><%= project.description || 'No description provided.' %></p>
+
+            <div class="project-progress">
+              <div class="progress-info">
+                <span>Progress</span>
+                <span><%= percent %>% (<%= project.completedTasks %>/<%= project.totalTasks %> tasks)</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: <%= percent %>%;"></div>
+              </div>
+            </div>
+
+            <div class="project-card-footer">
+              <div class="member-avatars">
+                <% project.members.slice(0, 4).forEach(m => { %>
+                  <div class="avatar-sm" style="background-color: <%= m.avatar_color || '#4f46e5' %>" title="<%= m.username %>">
+                    <%= m.username.charAt(0).toUpperCase() %>
+                  </div>
+                <% }) %>
+                <% if (project.members.length > 4) { %>
+                  <div class="avatar-sm avatar-more">+<%= project.members.length - 4 %></div>
+                <% } %>
+              </div>
+
+              <div class="project-card-actions">
+                <a href="/projects/<%= project.id %>" class="btn btn-primary btn-sm">Open Board &rarr;</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Modal: New Project -->
+<div id="newProjectModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Create New Group Project</h3>
+      <button onclick="closeModal('newProjectModal')" class="modal-close">&times;</button>
+    </div>
+    <form action="/projects" method="POST">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="projectName">Project Name *</label>
+          <input type="text" id="projectName" name="name" placeholder="e.g. Website Redesign" required>
+        </div>
+        <div class="form-group">
+          <label for="projectDescription">Description</label>
+          <textarea id="projectDescription" name="description" rows="3" placeholder="Brief outline of project goals and scope..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('newProjectModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Project</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

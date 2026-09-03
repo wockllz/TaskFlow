@@ -1,0 +1,222 @@
+<%- include('partials/header') %>
+
+<div class="project-board-page">
+  <!-- Board Header -->
+  <div class="board-header">
+    <div class="board-header-main">
+      <div class="breadcrumbs">
+        <a href="/dashboard">&larr; Dashboard</a>
+      </div>
+      <div class="title-with-badge">
+        <h1 class="project-board-title"><%= project.name %></h1>
+        <% if (isOwner) { %>
+          <span class="role-badge owner">Owner</span>
+        <% } %>
+      </div>
+      <p class="project-board-desc"><%= project.description || 'No description provided.' %></p>
+    </div>
+
+    <div class="board-header-actions">
+      <button class="btn btn-secondary" onclick="openModal('addMemberModal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+        Add Member
+      </button>
+
+      <button class="btn btn-primary" onclick="openModal('newTaskModal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Add Task
+      </button>
+
+      <% if (isOwner) { %>
+        <form action="/projects/<%= project.id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this project? All tasks and comments will be permanently removed.');">
+          <button type="submit" class="btn btn-danger-outline btn-icon" title="Delete Project">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Members Bar -->
+  <div class="members-bar">
+    <span class="members-title">Team Members (<%= members.length %>):</span>
+    <div class="members-list">
+      <% members.forEach(member => { %>
+        <div class="member-chip" title="<%= member.username %> (<%= member.email %>)">
+          <div class="avatar-sm" style="background-color: <%= member.avatar_color || '#4f46e5' %>">
+            <%= member.username.charAt(0).toUpperCase() %>
+          </div>
+          <span class="member-chip-name">@<%= member.username %></span>
+          <% if (member.role === 'owner') { %><small class="owner-star">★</small><% } %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Kanban Columns Container -->
+  <div class="kanban-board">
+    <!-- Column 1: To Do -->
+    <div class="kanban-column" data-status="todo">
+      <div class="column-header column-todo">
+        <div class="column-title">
+          <span class="status-dot dot-todo"></span>
+          <h3>To Do</h3>
+        </div>
+        <span class="task-count" id="count-todo"><%= columns.todo.length %></span>
+      </div>
+
+      <div class="kanban-column-content" id="column-todo">
+        <% columns.todo.forEach(task => { %>
+          <%- include('partials/task_card', { task: task }) %>
+        <% }) %>
+        <% if (columns.todo.length === 0) { %>
+          <div class="empty-column-placeholder">Drop tasks here or click "+ Add Task"</div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Column 2: In Progress -->
+    <div class="kanban-column" data-status="in_progress">
+      <div class="column-header column-progress">
+        <div class="column-title">
+          <span class="status-dot dot-progress"></span>
+          <h3>In Progress</h3>
+        </div>
+        <span class="task-count" id="count-in_progress"><%= columns.in_progress.length %></span>
+      </div>
+
+      <div class="kanban-column-content" id="column-in_progress">
+        <% columns.in_progress.forEach(task => { %>
+          <%- include('partials/task_card', { task: task }) %>
+        <% }) %>
+        <% if (columns.in_progress.length === 0) { %>
+          <div class="empty-column-placeholder">Drop tasks here</div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Column 3: Done -->
+    <div class="kanban-column" data-status="done">
+      <div class="column-header column-done">
+        <div class="column-title">
+          <span class="status-dot dot-done"></span>
+          <h3>Done</h3>
+        </div>
+        <span class="task-count" id="count-done"><%= columns.done.length %></span>
+      </div>
+
+      <div class="kanban-column-content" id="column-done">
+        <% columns.done.forEach(task => { %>
+          <%- include('partials/task_card', { task: task }) %>
+        <% }) %>
+        <% if (columns.done.length === 0) { %>
+          <div class="empty-column-placeholder">Drop tasks here</div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: New Task -->
+<div id="newTaskModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Create New Task</h3>
+      <button onclick="closeModal('newTaskModal')" class="modal-close">&times;</button>
+    </div>
+    <form action="/projects/<%= project.id %>/tasks" method="POST">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="taskTitle">Task Title *</label>
+          <input type="text" id="taskTitle" name="title" placeholder="What needs to be done?" required>
+        </div>
+
+        <div class="form-group">
+          <label for="taskDescription">Description</label>
+          <textarea id="taskDescription" name="description" rows="3" placeholder="Add detailed task specs or requirements..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label for="taskStatus">Initial Status</label>
+            <select id="taskStatus" name="status">
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+
+          <div class="form-group col-half">
+            <label for="taskPriority">Priority</label>
+            <select id="taskPriority" name="priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label for="taskAssignee">Assignee</label>
+            <select id="taskAssignee" name="assignee_id">
+              <option value="">-- Unassigned --</option>
+              <% members.forEach(m => { %>
+                <option value="<%= m.id %>" <%= m.id === currentUser.id ? 'selected' : '' %>>
+                  @<%= m.username %> <%= m.id === currentUser.id ? '(You)' : '' %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group col-half">
+            <label for="taskDueDate">Due Date</label>
+            <input type="date" id="taskDueDate" name="due_date">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('newTaskModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Add Member -->
+<div id="addMemberModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add Project Member</h3>
+      <button onclick="closeModal('addMemberModal')" class="modal-close">&times;</button>
+    </div>
+    <form action="/projects/<%= project.id %>/members" method="POST">
+      <div class="modal-body">
+        <% if (availableUsers.length > 0) { %>
+          <div class="form-group">
+            <label for="selectUser">Select Existing Registered User</label>
+            <select id="selectUser" name="userId">
+              <option value="">-- Select a User --</option>
+              <% availableUsers.forEach(u => { %>
+                <option value="<%= u.id %>">@<%= u.username %> (<%= u.email %>)</option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="divider-text">OR</div>
+        <% } %>
+
+        <div class="form-group">
+          <label for="usernameOrEmail">Search by Username or Email</label>
+          <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="e.g. alex_dev or john@codealpha.com">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('addMemberModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Member</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

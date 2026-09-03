@@ -1,0 +1,168 @@
+<%- include('partials/header') %>
+
+<div class="task-detail-page">
+  <div class="breadcrumbs">
+    <a href="/dashboard">Dashboard</a> &rsaquo; 
+    <a href="/projects/<%= task.project_id %>"><%= task.project_name %></a> &rsaquo; 
+    <span>Task #<%= task.id %></span>
+  </div>
+
+  <div class="task-detail-grid">
+    <!-- Main Left Content: Title, Description & Discussion -->
+    <div class="task-main-content">
+      <div class="task-header-card">
+        <div class="task-title-area">
+          <span class="priority-badge priority-<%= task.priority %>">
+            <%= task.priority.toUpperCase() %>
+          </span>
+          <h1 class="task-title"><%= task.title %></h1>
+        </div>
+
+        <div class="task-description-box">
+          <h3>Description</h3>
+          <% if (task.description) { %>
+            <p class="description-text"><%= task.description %></p>
+          <% } else { %>
+            <p class="description-text empty">No description provided for this task.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Discussion Thread Section -->
+      <div class="comments-section" id="comments">
+        <div class="comments-header">
+          <h3>💬 Discussion Thread (<%= comments.length %>)</h3>
+        </div>
+
+        <!-- Add Comment Form -->
+        <form action="/tasks/<%= task.id %>/comments" method="POST" class="comment-form">
+          <div class="comment-input-wrap">
+            <div class="avatar-sm" style="background-color: <%= currentUser.avatar_color || '#4f46e5' %>">
+              <%= currentUser.username.charAt(0).toUpperCase() %>
+            </div>
+            <textarea 
+              name="content" 
+              rows="3" 
+              placeholder="Write a comment or update for your team..." 
+              required
+            ></textarea>
+          </div>
+          <div class="comment-form-actions">
+            <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+          </div>
+        </form>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+          <% if (comments.length === 0) { %>
+            <div class="empty-comments">
+              <p>No comments yet. Be the first to start the conversation!</p>
+            </div>
+          <% } else { %>
+            <% comments.forEach(comment => { %>
+              <div class="comment-card">
+                <div class="comment-avatar">
+                  <div class="avatar-sm" style="background-color: <%= comment.author_color || '#4f46e5' %>">
+                    <%= comment.author_name.charAt(0).toUpperCase() %>
+                  </div>
+                </div>
+
+                <div class="comment-body">
+                  <div class="comment-meta">
+                    <span class="comment-author">@<%= comment.author_name %></span>
+                    <span class="comment-time"><%= comment.created_at %></span>
+
+                    <% if (comment.user_id === currentUser.id) { %>
+                      <form action="/comments/<%= comment.id %>/delete" method="POST" class="delete-comment-form" onsubmit="return confirm('Delete this comment?');">
+                        <button type="submit" class="btn-text-danger">&times; Delete</button>
+                      </form>
+                    <% } %>
+                  </div>
+
+                  <div class="comment-text">
+                    <%= comment.content %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar: Properties & Quick Actions -->
+    <div class="task-sidebar">
+      <div class="sidebar-card">
+        <h3>Task Details</h3>
+        
+        <form action="/tasks/<%= task.id %>/update" method="POST" class="sidebar-form">
+          <div class="form-group">
+            <label for="taskTitleEdit">Title</label>
+            <input type="text" id="taskTitleEdit" name="title" value="<%= task.title %>" required>
+          </div>
+
+          <div class="form-group">
+            <label for="taskDescEdit">Description</label>
+            <textarea id="taskDescEdit" name="description" rows="3"><%= task.description %></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="statusSelect">Status</label>
+            <select id="statusSelect" name="status">
+              <option value="todo" <%= task.status === 'todo' ? 'selected' : '' %>>To Do</option>
+              <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+              <option value="done" <%= task.status === 'done' ? 'selected' : '' %>>Done</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="prioritySelect">Priority</label>
+            <select id="prioritySelect" name="priority">
+              <option value="low" <%= task.priority === 'low' ? 'selected' : '' %>>Low</option>
+              <option value="medium" <%= task.priority === 'medium' ? 'selected' : '' %>>Medium</option>
+              <option value="high" <%= task.priority === 'high' ? 'selected' : '' %>>High</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="assigneeSelect">Assignee</label>
+            <select id="assigneeSelect" name="assignee_id">
+              <option value="">-- Unassigned --</option>
+              <% projectMembers.forEach(m => { %>
+                <option value="<%= m.id %>" <%= task.assignee_id === m.id ? 'selected' : '' %>>
+                  @<%= m.username %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dueDateSelect">Due Date</label>
+            <input type="date" id="dueDateSelect" name="due_date" value="<%= task.due_date || '' %>">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+        </form>
+
+        <hr class="sidebar-divider">
+
+        <div class="meta-info-list">
+          <div class="meta-item">
+            <span class="meta-label">Created By:</span>
+            <span class="meta-val">@<%= task.creator_name %></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Created At:</span>
+            <span class="meta-val"><%= task.created_at %></span>
+          </div>
+        </div>
+
+        <form action="/tasks/<%= task.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this task?');" class="mt-4">
+          <button type="submit" class="btn btn-danger btn-block">Delete Task</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

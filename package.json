@@ -1,0 +1,28 @@
+{
+  "name": "codealpha-project-management-tool",
+  "version": "1.0.0",
+  "description": "Full-Stack Project Management Tool with Kanban Board, Task Assignment, and Comments - CodeAlpha Task 3",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node db/seed.js"
+  },
+  "keywords": [
+    "project-management",
+    "kanban",
+    "express",
+    "sqlite",
+    "ejs",
+    "codealpha"
+  ],
+  "author": "CodeAlpha Intern",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
+  }
+}
