@@ -213,7 +213,7 @@ router.post('/projects/:id/members', requireAuth, (req, res) => {
       return res.redirect(`/projects/${projectId}?error=User is already a project member.`);
     }
 
-    db.prepare('INSERT INTO project_members (project_id, user_id, role) VALUES (?, ?, "member")')
+    db.prepare("INSERT INTO project_members (project_id, user_id, role) VALUES (?, ?, 'member')")
       .run(projectId, targetUser.id);
 
     res.redirect(`/projects/${projectId}?success=Added @${targetUser.username} to project.`);
