@@ -23,10 +23,10 @@ function seedDatabase() {
     VALUES (?, ?, ?, ?)
   `);
 
-  const sarahId = insertUser.run('sarah_pm', 'sarah@codealpha.com', hashedPassword, '#ec4899').lastInsertRowid;
-  const alexId = insertUser.run('alex_dev', 'alex@codealpha.com', hashedPassword, '#3b82f6').lastInsertRowid;
-  const johnId = insertUser.run('john_design', 'john@codealpha.com', hashedPassword, '#10b981').lastInsertRowid;
-  const emmaId = insertUser.run('emma_qa', 'emma@codealpha.com', hashedPassword, '#f59e0b').lastInsertRowid;
+  const sarahId = insertUser.run('sarah_pm', 'sarah@taskflow.dev', hashedPassword, '#ec4899').lastInsertRowid;
+  const alexId = insertUser.run('alex_dev', 'alex@taskflow.dev', hashedPassword, '#3b82f6').lastInsertRowid;
+  const johnId = insertUser.run('john_design', 'john@taskflow.dev', hashedPassword, '#10b981').lastInsertRowid;
+  const emmaId = insertUser.run('emma_qa', 'emma@taskflow.dev', hashedPassword, '#f59e0b').lastInsertRowid;
 
   console.log('Users created:', { sarahId, alexId, johnId, emmaId });
 
@@ -37,7 +37,7 @@ function seedDatabase() {
   `);
 
   const p1Id = insertProject.run(
-    'CodeAlpha Web Portal Redesign',
+    'Web Portal Redesign',
     'Full overhaul of the intern portal dashboard, task management workflow, and user settings.',
     sarahId
   ).lastInsertRowid;
@@ -130,7 +130,7 @@ function seedDatabase() {
 
   const t6Id = insertTask.run(
     p1Id,
-    'Final Documentation & CodeAlpha Submission',
+    'Final Documentation & Handover',
     'Write comprehensive README.md detailing setup instructions, tech stack, and feature overview.',
     'todo',
     'low',

@@ -1,7 +1,7 @@
 {
-  "name": "codealpha-project-management-tool",
+  "name": "taskflow",
   "version": "1.0.0",
-  "description": "Full-Stack Project Management Tool with Kanban Board, Task Assignment, and Comments - CodeAlpha Task 3",
+  "description": "Full-Stack Project Management Tool with Kanban Board, Task Assignment, and Comments",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,9 +13,9 @@
     "express",
     "sqlite",
     "ejs",
-    "codealpha"
+    "taskflow"
   ],
-  "author": "CodeAlpha Intern",
+  "author": "Ntshuxeko Sambo",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",

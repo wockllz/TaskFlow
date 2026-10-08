@@ -1,5 +1,5 @@
 /**
- * CodeAlpha TaskFlow - Frontend Interactivity & Drag and Drop Engine
+ * TaskFlow - Frontend Interactivity & Drag and Drop Engine
  */
 
 document.addEventListener('DOMContentLoaded', () => {

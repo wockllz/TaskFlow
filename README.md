@@ -1,6 +1,6 @@
-# CodeAlpha Project Management Tool (Task 3)
+# TaskFlow
 
-A full-stack, collaborative Project Management Tool with Trello/Asana-style Kanban boards, task assignment, drag-and-drop card movement, and real-time comment threads. Built for Task 3 of the **CodeAlpha Full Stack Development Internship**.
+A full-stack, collaborative Project Management Tool with Trello/Asana-style Kanban boards, task assignment, drag-and-drop card movement, and real-time comment threads.
 
 ---
 
@@ -47,7 +47,7 @@ A full-stack, collaborative Project Management Tool with Trello/Asana-style Kanb
 ## 📁 Project Structure
 
 ```
-CodeAlpha_ProjectManagementTool/
+TaskFlow/
 ├── server.js               # Express application entry point
 ├── package.json            # Dependencies and scripts
 ├── .gitignore              # Git ignore configuration
@@ -109,10 +109,10 @@ To quickly explore the application without manually registering, use these seede
 
 | User | Email / Username | Password | Role |
 |------|------------------|----------|------|
-| **Sarah Jenkins** | `sarah@codealpha.com` or `sarah_pm` | `password123` | Project Owner / PM |
-| **Alex Rivera** | `alex@codealpha.com` or `alex_dev` | `password123` | Full Stack Developer |
-| **John Doe** | `john@codealpha.com` or `john_design` | `password123` | UI/UX Designer |
-| **Emma Watson** | `emma@codealpha.com` or `emma_qa` | `password123` | QA Engineer |
+| **Sarah Jenkins** | `sarah@taskflow.dev` or `sarah_pm` | `password123` | Project Owner / PM |
+| **Alex Rivera** | `alex@taskflow.dev` or `alex_dev` | `password123` | Full Stack Developer |
+| **John Doe** | `john@taskflow.dev` or `john_design` | `password123` | UI/UX Designer |
+| **Emma Watson** | `emma@taskflow.dev` or `emma_qa` | `password123` | QA Engineer |
 
 *(Clicking the demo buttons on the login page pre-fills these credentials automatically).*
 
@@ -132,9 +132,9 @@ The SQLite database uses 5 interconnected tables with foreign key cascades:
 
 ## 📄 License & Credits
 
-Built as part of the **CodeAlpha Full Stack Development Internship** - Task 3.
+Built with Node.js, Express, SQLite, and EJS.
 License: MIT.
 
 ## Author
 
-**Ntshuxeko Sambo** — CodeAlpha Full Stack Development Intern (Student ID: CA/DF1/260876)
+**Ntshuxeko Sambo** — Full-Stack Developer

@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'codealpha_secret_key_2026_super_secure',
+  secret: process.env.SESSION_SECRET || 'taskflow_secret_key_2026_super_secure',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -78,6 +78,6 @@ app.use((err, req, res, next) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(`====================================================`);
-  console.log(`🚀 CodeAlpha TaskFlow running on http://localhost:${PORT}`);
+  console.log(`🚀 TaskFlow running on http://localhost:${PORT}`);
   console.log(`====================================================`);
 });

@@ -1,4 +1,4 @@
--- Schema for CodeAlpha Project Management Tool
+-- Schema for TaskFlow
 
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
