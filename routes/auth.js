@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const db = require('../db/database');
+const { rateLimit, cap, emailOk } = require('../middleware/security');
 const { redirectIfAuth } = require('../middleware/auth');
 
 const AVATAR_COLORS = [
@@ -19,8 +20,11 @@ router.get('/register', redirectIfAuth, (req, res) => {
 });
 
 // POST /register
-router.post('/register', redirectIfAuth, (req, res) => {
-  const { username, email, password, confirmPassword } = req.body;
+router.post('/register', redirectIfAuth, rateLimit({ max: 20 }), (req, res) => {
+  const username = cap(req.body.username, 32).trim();
+  const email = cap(req.body.email, 160).trim().toLowerCase();
+  const password = String(req.body.password || '');
+  const confirmPassword = String(req.body.confirmPassword || '');
 
   if (!username || !email || !password) {
     return res.render('register', { error: 'All fields are required.' });
@@ -69,8 +73,9 @@ router.get('/login', redirectIfAuth, (req, res) => {
 });
 
 // POST /login
-router.post('/login', redirectIfAuth, (req, res) => {
-  const { loginInput, password } = req.body;
+router.post('/login', redirectIfAuth, rateLimit({ max: 10 }), (req, res) => {
+  const loginInput = cap(req.body.loginInput, 160).trim();
+  const password = String(req.body.password || '');
 
   if (!loginInput || !password) {
     return res.render('login', { error: 'Please enter both email/username and password.' });

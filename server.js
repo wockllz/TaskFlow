@@ -1,11 +1,13 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const db = require('./db/database');
 const seedDatabase = require('./db/seed');
 const { setUser } = require('./middleware/auth');
+const { securityHeaders } = require('./middleware/security');
 
 const authRoutes = require('./routes/auth');
 const projectRoutes = require('./routes/projects');
@@ -20,15 +22,23 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Body parsing middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(securityHeaders);
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Static assets
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
+const sessionSecret =
+  process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+
+if (!process.env.SESSION_SECRET) {
+  console.warn('[security] SESSION_SECRET not set — generated a random secret for this run.');
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'taskflow_secret_key_2026_super_secure',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -63,6 +73,10 @@ app.use('/', authRoutes);
 app.use('/', projectRoutes);
 app.use('/', taskRoutes);
 app.use('/', commentRoutes);
+
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, name: 'TaskFlow', uptimeSeconds: Math.round(process.uptime()) });
+});
 
 // 404 Handler
 app.use((req, res) => {
