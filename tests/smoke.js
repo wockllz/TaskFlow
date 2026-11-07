@@ -64,6 +64,11 @@ async function main() {
 
         const after = db.prepare("SELECT status FROM tasks WHERE id = ?").get(row.id);
         ok("status persisted in database", after && after.status === "done", after ? after.status : "?");
+
+        const boardAfter = await fetch(base + "/projects/" + project.id, { headers: { Cookie: j.h() } });
+        const boardHtml = await boardAfter.text();
+        ok("progress bar renders", boardHtml.includes("progress-fill"));
+        ok("progress reflects completion", boardHtml.includes("100%") && boardHtml.includes("1/1 tasks"));
       }
     }
 

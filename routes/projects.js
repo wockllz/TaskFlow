@@ -170,6 +170,10 @@ router.get('/projects/:id', requireAuth, (req, res) => {
       availableUsers,
       columns,
       totalTasksCount: tasks.length,
+      doneTasksCount: tasks.filter((t) => t.status === 'done').length,
+      progressPct: tasks.length
+        ? Math.round((tasks.filter((t) => t.status === 'done').length / tasks.length) * 100)
+        : 0,
       isOwner: project.owner_id === userId,
       error: req.query.error || null,
       success: req.query.success || null
